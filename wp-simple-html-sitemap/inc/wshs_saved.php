@@ -42,7 +42,7 @@ function wshs_save_shortcode() {
     wp_send_json(array('id' => $id));
 }
 add_action('wp_ajax_wshs_save_shortcode', 'wshs_save_shortcode');
-add_action('wp_ajax_nopriv_wshs_save_shortcode', 'wshs_save_shortcode');
+//add_action('wp_ajax_nopriv_wshs_save_shortcode', 'wshs_save_shortcode');
 
 function wshs_saved(){
     global $wpdb;

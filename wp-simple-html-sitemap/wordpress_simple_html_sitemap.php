@@ -4,7 +4,7 @@
  * Plugin URI: http://wordpress.org/plugins/wp-simple-html-sitemap/
  * Description: Using WordPress Simple HTML Sitemap plugin, you can add HTML Sitemap anywhere on the website using Shortcode.
  * Author: Ashish Ajani
- * Version: 3.2
+ * Version: 3.3
  * Author: Ashish Ajani
  * Author URI: http://freelancer-coder.com/
  * License: GPLv2 or later

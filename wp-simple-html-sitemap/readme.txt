@@ -3,9 +3,9 @@ Contributors: ashishajani
 Donate link: http://freelancer-coder.com
 Tags: wordPress html sitemap plugin, wordPress html sitemap shortcode, simple html sitemap, wordPress sitemap, post and pages sitemap
 Requires at least: 6.0
-Tested up to: 6.6.2
+Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 3.2
+Stable tag: 3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,7 +120,11 @@ Share details about issue/bug via plugin support option or reach at me through m
 
 == Changelog ==
 
-= 3.1 =
+= 3.3 =
+* Removed unauthenticated AJAX actions to resolve broken access control vulnerability.
+* Resolve an crtical error when no posts or pages found.
+
+= 3.2 =
 * Updated security standards
 * Added ability to define limit of items to include in sitemap
 * Added an option to allow website admin to disable the default css of the plugin

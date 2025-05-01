@@ -50,7 +50,7 @@ function wshs_front_display_list($atts) {
         'new_feature' => false,
         ), $atts, 'wshs_list');
 
-    $excludePosts = explode(', ', $atts['exclude']);
+    $excludePosts   = preg_split('/\s*,\s*/', $atts['exclude'], -1, PREG_SPLIT_NO_EMPTY);
     $customtaxonomy = get_terms($atts['taxonomy']);
     $taxonomyarray = array();
 
@@ -103,6 +103,7 @@ function wshs_front_display_list($atts) {
     }
     
     $wshsfrontquery = new WP_Query($wshsargs);
+    $typeallposts   = array();
     if ($atts['post_type'] != 'page') {
         if ($wshsfrontquery->post_count > 0) {
             foreach ($wshsfrontquery->posts as $typepost):
@@ -110,7 +111,7 @@ function wshs_front_display_list($atts) {
             endforeach;
         }
     }
-
+    
     /* Pass argument form post-type page limit, child-of, order by, order and exclude pages. */
     $postcount = $wshsfrontquery->post_count;
     $wshsargss = array(
@@ -259,7 +260,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
         }
     }
 	}else{
-		$returndata .= '<p><strong>Oops! something wrong with the shortcode. Please go back to the edit page and correct value for the post_type parameter.</strong></p>';
+		$returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }
@@ -366,7 +367,7 @@ function wshs_simple_list_view_image($allposts, $level, $showimage, $imagewidth,
         }
     }
 	}else{
-		$returndata .= '<p><strong>Oops! something wrong with the shortcode. Please go back to the edit page and correct value for the post_type parameter.</strong></p>';
+        $returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }
@@ -403,7 +404,7 @@ function wshs_simple_list_view_horizontal($allposts, $level, $separator, $title,
 			}
 		}
     }else{
-		$returndata .= '<p><strong>Oops! something wrong with the shortcode. Please go back to the edit page and correct value for the post_type parameter.</strong></p>';
+        $returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }

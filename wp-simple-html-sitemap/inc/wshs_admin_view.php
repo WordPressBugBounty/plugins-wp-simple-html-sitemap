@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ *
  * @decription List of post-type Page, Post and Custom Post Type (CPT) from admin side.
  * 
  */
@@ -89,7 +89,7 @@ function wshs_get_posts_by_type() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
-add_action('wp_ajax_nopriv_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
+//add_action('wp_ajax_nopriv_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
 
 /**
  * 
@@ -119,12 +119,11 @@ function wshs_get_posts_by_taxonomy() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy', 'wshs_get_posts_by_taxonomy');
-add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy', 'wshs_get_posts_by_taxonomy');
+//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy', 'wshs_get_posts_by_taxonomy');
 
 /**
  * 
  * @description Particular Taxonomy post list.
- * 
  */
 function wshs_get_posts_by_taxonomy_post() {
     global $post;
@@ -197,7 +196,7 @@ function wshs_get_posts_by_taxonomy_post() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonomy_post');
-add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonomy_post');
+//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonomy_post');
 
 /**
  * 
@@ -227,7 +226,7 @@ function wshs_get_posts_by_taxonomy_terms() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy_terms', 'wshs_get_posts_by_taxonomy_terms');
-add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_terms', 'wshs_get_posts_by_taxonomy_terms');
+//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_terms', 'wshs_get_posts_by_taxonomy_terms');
 
 /**
  * 
@@ -316,7 +315,7 @@ endwhile;
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy_terms_posts', 'wshs_get_posts_by_taxonomy_terms_posts');
-add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_terms_posts', 'wshs_get_posts_by_taxonomy_terms_posts');
+//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_terms_posts', 'wshs_get_posts_by_taxonomy_terms_posts');
 
 /**
  * 
@@ -397,6 +396,7 @@ function handle_disable_plugin_styles() {
         $value = get_option('wshs_disable_plugin_styles', '0');  
         wp_send_json_success($value);  
     }  
-}  
-add_action('wp_ajax_handle_disable_plugin_styles', 'handle_disable_plugin_styles');  
-add_action('wp_ajax_nopriv_handle_disable_plugin_styles', 'handle_disable_plugin_styles');  
+}
+
+add_action('wp_ajax_handle_disable_plugin_styles', 'handle_disable_plugin_styles');
+//add_action('wp_ajax_nopriv_handle_disable_plugin_styles', 'handle_disable_plugin_styles');
