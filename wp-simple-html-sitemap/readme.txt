@@ -5,7 +5,7 @@ Tags: wordPress html sitemap plugin, wordPress html sitemap shortcode, simple ht
 Requires at least: 6.0
 Tested up to: 6.8.1
 Requires PHP: 7.4
-Stable tag: 3.3
+Stable tag: 3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +119,9 @@ Share details about issue/bug via plugin support option or reach at me through m
 
 
 == Changelog ==
+
+= 3.4 =
+* Resolved vulnerability issues, updated security, and tested with the latest WordPress version.
 
 = 3.3 =
 * Removed unauthenticated AJAX actions to resolve broken access control vulnerability.

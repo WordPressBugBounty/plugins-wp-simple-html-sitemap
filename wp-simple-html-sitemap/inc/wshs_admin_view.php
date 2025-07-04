@@ -89,7 +89,6 @@ function wshs_get_posts_by_type() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
-//add_action('wp_ajax_nopriv_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
 
 /**
  * 
