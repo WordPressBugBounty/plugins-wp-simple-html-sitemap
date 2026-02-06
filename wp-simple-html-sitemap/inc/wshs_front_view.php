@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * 
  * @param type $atts
@@ -8,7 +10,7 @@
 function wshs_front_display_list($atts) {
 
     if (get_option('wshs_disable_plugin_styles') == '0') {
-        wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_front_style.css');
+        wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_front_style.css',array(),filemtime(WSHS_PLUGIN_CSS . 'wshs_front_style.css'), false);
     }
     if (get_option('wshs_disable_plugin_styles') == '1') {
         wp_dequeue_style( 'wshs_front_css' );
@@ -21,14 +23,14 @@ function wshs_front_display_list($atts) {
     $atts = array_map('sanitize_text_field', $atts);
 
 
-    global $taxquery;
+    global $wshs_taxquery;
 
     $atts = shortcode_atts(array(
         'taxonomy' => false,
         'terms' => false,
         'post_type' => 'page',
         'order_by' => 'date',
-        'exclude' => '',
+        'exclude' => '', // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
         'show_image' => false,
         'image_width' => 60,
         'image_height' => 60,
@@ -50,7 +52,28 @@ function wshs_front_display_list($atts) {
         'new_feature' => false,
         ), $atts, 'wshs_list');
 
-    $excludePosts   = preg_split('/\s*,\s*/', $atts['exclude'], -1, PREG_SPLIT_NO_EMPTY);
+    // Whitelist and validate 'order'
+    $allowed_orders = array('asc', 'desc');
+    $atts['order'] = in_array(strtolower($atts['order']), $allowed_orders) ? strtolower($atts['order']) : 'asc';
+
+    // Whitelist and validate 'orderby'
+    $allowed_orderby = array('date', 'title', 'ID', 'author', 'comment_count');
+    $atts['order_by'] = in_array(strtolower($atts['order_by']), $allowed_orderby) ? strtolower($atts['order_by']) : 'date';
+
+    // Validate 'post_type'
+    if (!post_type_exists($atts['post_type'])) {
+        $atts['post_type'] = 'post'; // Revert to a safe default
+    }
+
+    // Sanitize 'post_limit' to ensure it is an integer
+    $atts['post_limit'] = intval($atts['post_limit']);
+
+    // Sanitize and validate 'exclude'
+    $excludePosts = array_map('intval', explode(',', $atts['exclude']));
+    $excludePosts = array_filter($excludePosts);
+
+
+    //$excludePosts   = preg_split('/\s*,\s*/', $atts['exclude'], -1, PREG_SPLIT_NO_EMPTY);
     $customtaxonomy = get_terms($atts['taxonomy']);
     $taxonomyarray = array();
 
@@ -64,7 +87,7 @@ function wshs_front_display_list($atts) {
 
     /* post-type Taxonomy */
     if ($atts['taxonomy'] == true) {
-        $taxquery = array(
+        $wshs_taxquery = array(
             array(
                 'taxonomy' => $atts['taxonomy'],
                 'field' => 'slug',
@@ -75,7 +98,7 @@ function wshs_front_display_list($atts) {
 
     /* post-type Taxonomy Terms */
     if ($atts['taxonomy'] == true && $atts['terms'] == true) {
-        $taxquery = array(
+        $wshs_taxquery = array(
             array(
                 'taxonomy' => $atts['taxonomy'],
                 'field' => 'slug',
@@ -88,11 +111,10 @@ function wshs_front_display_list($atts) {
     $wshsargs = array(
         'post_type' => $atts['post_type'],
         'posts_per_page' => $atts['post_limit'],
-        'post__not_in' => $excludePosts,
-        // 'post_parent' => $atts['child_of'],
+        'post__not_in' => $excludePosts, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
         'orderby' => $atts['order_by'],
         'order' => $atts['order'],
-        'tax_query' => $taxquery
+        'tax_query' => $wshs_taxquery,  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
     );
     
     $treeparent = $atts['child_of'];
@@ -119,7 +141,7 @@ function wshs_front_display_list($atts) {
         'number' => $atts['page_limit'],
         'sort_column' => $atts['order_by'],
         'sort_order' => $atts['order'],
-        'exclude' => $excludePosts,
+        'exclude' => $excludePosts, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
         'child_of' => $atts['child_of'],
         
     );
@@ -214,7 +236,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
         $columnclass = '';
     }
     if ($title != '') {
-        $titles = '<h2>' . ucfirst($title) . '</h2>';
+        $titles = '<h2>' . esc_html(ucfirst($title),'wp-simple-html-sitemap') . '</h2>';
     } else {
         $titles = '';
     }
@@ -229,7 +251,9 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
             }
         }
         if ($level <= $depth) {
-            $returndata .= '<li><a href="' . get_permalink($singlepost->ID) . '" title="' . $singlepost->post_title . '">' . $singlepost->post_title . '</a>' . $date;
+            //$returndata .= '<li><a href="' . get_permalink($singlepost->ID) . '" title="' . $singlepost->post_title . '">' . $singlepost->post_title . '</a>' . $date;
+            $returndata .= '<li><a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>' . esc_html($date);
+
             if (isset($singlepost->children)) {
                 if ($depth == $level) {
                     $hidedepthul = "style='display:none'";
@@ -260,7 +284,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
         }
     }
 	}else{
-		$returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
+		$returndata .= "<p><strong>".__('There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.','wp-simple-html-sitemap').'</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }
@@ -321,7 +345,7 @@ function wshs_simple_list_view_image($allposts, $level, $showimage, $imagewidth,
             $returndata .= '<a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>';
             if ($excerptlimit == true) {
                 $excerpt = get_the_excerpt($singlepost->ID);
-                $excerpt = strip_tags($excerpt);
+                $excerpt = wp_strip_all_tags($excerpt);
                 $excerpt = wshs_truncate_value($excerpt, $excerptlimit, ' ');
                 $returndata .= '<p>' . esc_html($excerpt) . '</p>';
             }
@@ -351,7 +375,7 @@ function wshs_simple_list_view_image($allposts, $level, $showimage, $imagewidth,
             $returndata .= '<a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>';
             if ($excerptlimit == true) {
                 $excerpt = get_the_excerpt($singlepost->ID);
-                $excerpt = strip_tags($excerpt);
+                $excerpt = wp_strip_all_tags($excerpt);
                 $excerpt = wshs_truncate_value($excerpt, $excerptlimit, ' ');
                 $returndata .= '<p>' . esc_html($excerpt) . '</p>';
             }
@@ -367,7 +391,7 @@ function wshs_simple_list_view_image($allposts, $level, $showimage, $imagewidth,
         }
     }
 	}else{
-        $returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
+        $returndata .= "<p><strong>".__('There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.','wp-simple-html-sitemap').'</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }
@@ -404,7 +428,8 @@ function wshs_simple_list_view_horizontal($allposts, $level, $separator, $title,
 			}
 		}
     }else{
-        $returndata .= '<p><strong>There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.</strong></p>';
+                 
+        $returndata .= "<p><strong>".__('There are currently no posts available for the selected post type. Please consider choosing a different post type to find content.','wp-simple-html-sitemap').'</strong></p>';
 	}
     return $returndata .= ($level == 1) ? '</ul></div>' : '';
 }

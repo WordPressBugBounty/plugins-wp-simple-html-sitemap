@@ -1,19 +1,19 @@
-=== WordPress Simple HTML Sitemap ===
+=== WP Simple HTML Sitemap ===
 Contributors: ashishajani
 Donate link: http://freelancer-coder.com
-Tags: wordPress html sitemap plugin, wordPress html sitemap shortcode, simple html sitemap, wordPress sitemap, post and pages sitemap
+Tags: html sitemap plugin, html sitemap shortcode, simple html sitemap, sitemap, post and pages sitemap
 Requires at least: 6.0
-Tested up to: 6.8.1
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.4
+Stable tag: 3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Using WordPress Simple HTML Sitemap plugin, you can add HTML Sitemap anywhere on the website using Shortcode.
+Using Simple HTML Sitemap plugin, you can add HTML Sitemap anywhere on the website using Shortcode.
 
 == Description ==
 
-HTML sitemap helps website visitors navigating through a website. WordPress Simple HTML Sitemap plugin provides facility to generate shortcode and show HTML sitemap using generated shortcode. If you are running WordPress website having large number of CMS pages and blogs, this plugin can be really useful for you. This plugin is very simple and easy to use, yet it provides various configuration options to generate sitemap shortcode and place it anywhere on the website.
+HTML sitemap helps website visitors navigating through a website. Simple HTML Sitemap plugin provides facility to generate shortcode and show HTML sitemap using generated shortcode. If you are running WordPress website having large number of CMS pages and blogs, this plugin can be really useful for you. This plugin is very simple and easy to use, yet it provides various configuration options to generate sitemap shortcode and place it anywhere on the website.
 
 = Features Overview =
 - Easy to install and configure
@@ -75,24 +75,24 @@ Explanation of parameters:
 
 *Important note: If you like to generate a sitemap having both posts and pages, you need to use two shortcodes. One for the pages and another for the posts.*
 
-If you like learn more about shortcode parameters and other configuration options available at admin area, please take a look at here [WordPress Simple HTML Sitemap Plugin](https://freelancer-coder.com/wordpress-simple-html-sitemap-plugin)
+If you like learn more about shortcode parameters and other configuration options available at admin area, please take a look at here [Simple HTML Sitemap Plugin](https://freelancer-coder.com/wp-simple-html-sitemap-plugin)
 
 Please feel free to connect with me in case if you find any difficulties using this plugin, I'll remain attentive to comments. You can use this form to connect with me [https://freelancer-coder.com/contact-wordpress-developer/](https://freelancer-coder.com/contact-wordpress-developer/)
 
 == Installation ==
 
-Installation process is very simple for WordPress Simple HTML Sitemap Plugin. Ways to install plugin:
+Installation process is very simple for Simple HTML Sitemap Plugin. Ways to install plugin:
 
 = Installation with FTP: =
 
-      1. Download WordPress Simple HTML Sitemap Plugin.
+      1. Download Simple HTML Sitemap Plugin.
       2. Extract plugin.
-      2. Upload WordPress Simple HTML Sitemap Plugin directory to the '/wp-content/plugins/' directory.
-      3. Go to Plugins option from left menu and activate 'WordPress Simple HTML Sitemap' plugin from the list.
+      2. Upload Simple HTML Sitemap Plugin directory to the '/wp-content/plugins/' directory.
+      3. Go to Plugins option from left menu and activate 'Simple HTML Sitemap' plugin from the list.
       
 = Installation with Upload method via WordPress admin panel: =
 
-      1. Download WordPress Simple HTML Sitemap Plugin.
+      1. Download Simple HTML Sitemap Plugin.
       2. Go to plugins page by clicking on Plugins menu item from left menu.
       3. Click on 'Add New' option.
       4. Upload the plugin and activate.
@@ -120,8 +120,20 @@ Share details about issue/bug via plugin support option or reach at me through m
 
 == Changelog ==
 
+= 3.7 =
+* Resolved issues pointed out by WordPress plugin review team. 
+* Issues including Internationalization standards, Sanitized-Escaped-Validated data, used proper escaping, disallowed direct file access, etc... 
+
+= 3.6 =
+* Resolved issues pointed out by WordPress plugin review team. 
+* Issues including Internationalization standards, Sanitized-Escaped-Validated data, used proper escaping, disallowed direct file access, etc... 
+
+= 3.5 =
+* Updated plugin name to resolve trademark violation.
+* Resolved vulnerability issues, updated security, and tested with the latest version.
+
 = 3.4 =
-* Resolved vulnerability issues, updated security, and tested with the latest WordPress version.
+* Resolved vulnerability issues, updated security, and tested with the latest version.
 
 = 3.3 =
 * Removed unauthenticated AJAX actions to resolve broken access control vulnerability.

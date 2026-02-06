@@ -293,29 +293,7 @@ function wshsGetTaxonomyTermsListPost() {
 
 
     })
-    // var postData = {
-    //     action: 'wshs_get_posts_by_taxonomy_terms_post',
-    //     security: wshs_ajax_object.ajax_nonce,
-    //     type: jQuery('.wshs_select_type').val(),
-    //     taxonomyslug: wshsGetTaxonomyName(),
-    //     termsslug: wshsGetTaxonomyTermsName(),
-    //     dateformate: wshsGetDateFormate(),
-    //     orderby: jQuery('#wshs_select_order').val(),
-    //     order: jQuery('#wshs_select_order_asc').val(),
-    // };
-    // jQuery(".loading-sitemap").show();
-    // jQuery.post(ajaxurl, postData, function(response) {
-    //     $targetElement.html('');
-    //     if (response.length > 0) {
-    //         displayPostsToListing(response);
-    //         jQuery(".loading-sitemap").hide();
-    //     }
-    //     jQuery.each(excludeArray, function(index, val){
-    //         jQuery('.wshs-post-checkbox[value="'+val+'"]').prop('checked', true).trigger('change');
-    //     });
-    //     getShortCode();
-    // });
-}
+    }
 
 /* Get post-type date shortcode */
 function wshsGetDateFormate() {
@@ -1141,13 +1119,15 @@ jQuery(document).ready(function() {
     });
 });
 
-   jQuery(document).ready(function(jQuery) {  
-        jQuery('#disable_plugin_styles').change(function () {
+jQuery(document).ready(function(jQuery) {  
+    jQuery('#disable_plugin_styles').change(function () {
         
+        var wshs_nonce = "<?php echo esc_attr( wp_create_nonce( 'wshs_disable_styles' ) ); ?>";
         var isChecked = jQuery(this).is(':checked');  
         var postData = {
-            action: 'handle_disable_plugin_styles',  
-            option_value: isChecked      
+            action: 'wshs_disable_plugin_styles',  
+            option_value: isChecked,
+            security: wshs_nonce      
         };
         jQuery.post(wshs_ajax_object.ajax_url, postData, function (response) {        
             console.log('Option updated: ' + response.data);  
@@ -1156,7 +1136,7 @@ jQuery(document).ready(function() {
         
     // Get the current option value on page load  
     jQuery.post(wshs_ajax_object.ajax_url, {  
-        action: 'handle_disable_plugin_styles'  
+        action: 'wshs_disable_plugin_styles'  
     }, function(response) {  
        
         if (response.success) {  

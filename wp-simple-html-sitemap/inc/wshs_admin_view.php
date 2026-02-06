@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  *
  * @decription List of post-type Page, Post and Custom Post Type (CPT) from admin side.
@@ -13,13 +15,47 @@ function wshs_get_posts_by_type() {
 
     check_ajax_referer('ajax-nonce', 'security');
 
-    $type = sanitize_text_field($_POST['type']);
-    $orderby = sanitize_text_field($_POST['orderby']);
-    $order = sanitize_text_field($_POST['order']);
-    $dateformate = sanitize_text_field($_POST['dateformate']);
-    $taxonomyname = sanitize_text_field($_POST['taxonomyslug']);
-    $termsname = sanitize_text_field($_POST['termsslug']);
-    $post_limit = sanitize_text_field($_POST['post_limit']);
+    if(isset($_POST['type'])){
+        $type = sanitize_text_field(wp_unslash($_POST['type']));
+    } else {
+        $type = "";
+    }
+
+    if(isset($_POST['orderby'])){
+        $orderby = sanitize_text_field(wp_unslash($_POST['orderby']));
+    } else {
+        $orderby = "";
+    }
+
+    if(isset($_POST['order'])){
+        $order = sanitize_text_field(wp_unslash($_POST['order']));
+    } else {
+        $order = "";
+    }
+
+    if(isset($_POST['dateformate'])){
+        $dateformate = sanitize_text_field(wp_unslash($_POST['dateformate']));
+    } else {
+        $dateformate = "";
+    }
+
+    if(isset($_POST['taxonomyslug'])){
+        $taxonomyname = sanitize_text_field(wp_unslash($_POST['taxonomyslug']));
+    } else {
+        $taxonomyname = "";
+    }
+
+    if(isset($_POST['termsslug'])){
+        $termsname = sanitize_text_field(wp_unslash($_POST['termsslug']));
+    } else {
+        $termsname = "";
+    }
+
+    if(isset($_POST['post_limit'])){
+        $post_limit = sanitize_text_field(wp_unslash($_POST['post_limit']));
+    } else {
+        $post_limit = "";
+    }
 
     if (!post_type_exists($type)) {
         wp_send_json_error('Invalid post type');
@@ -62,9 +98,10 @@ function wshs_get_posts_by_type() {
         'posts_per_page' => $post_limit,
         'orderby' => $orderby,
         'order' => $order,
-        'tax_query' => $taxquery,
+        'tax_query' => $taxquery, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
         'ignore_custom_sort' => true,
     );
+    
     $query = new WP_Query($args);
 
     $typeallposts = array();
@@ -78,8 +115,8 @@ function wshs_get_posts_by_type() {
                 'ID' => $typepost->ID,
                 'post_parent' => $typepost->post_parent,
                 'post_date' => date_i18n($dateformate, strtotime($typepost->post_date)),
-                'post_excerpt' => esc_html(wshs_truncate_value(strip_tags($exp), 100, ' ')),
-                'post_content' => esc_html(wshs_truncate_value(strip_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
+                'post_excerpt' => esc_html(wshs_truncate_value(wp_strip_all_tags($exp), 100, ' ')),
+                'post_content' => esc_html(wshs_truncate_value(wp_strip_all_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
                 'post_image' => esc_url($featureimg[0]),
             );
         endforeach;
@@ -95,20 +132,21 @@ add_action('wp_ajax_wshs_get_posts_by_type', 'wshs_get_posts_by_type');
  * @description List of post-type Taxonomy.
  */
 function wshs_get_posts_by_taxonomy() {
+
     if (!current_user_can( 'manage_options' ) ) {
         return wp_send_json( array( 'result' => 'Authentication error' ) );
     }
 
     check_ajax_referer('ajax-nonce', 'security');
 
-    $type = sanitize_text_field($_POST['type']);
-
-    $taxonomies = get_object_taxonomies($type, 'object');
-    // if (!post_type_exists($taxonomies)) {
-    //     wp_send_json_error('Invalid post type');
-    // }
+    if(isset($_POST['type'])){
+        $type = sanitize_text_field(wp_unslash($_POST['type']));
+    } else {
+        $type = "";
+    }
+    $taxonomies = get_object_taxonomies($type, 'object');    
     $data         = array();
-    $data['data'] .= '<option value="">Select Taxonomy</option>';
+    $data['data'] .= '<option value="">'.esc_html__("Select Taxonomy","wp-simple-html-sitemap").'</option>';
     foreach ($taxonomies as $taxonomy) {
         if ($taxonomy->name != 'post_tag' && $taxonomy->name != 'post_format') {
             $data['data'] .= '<option value="' . esc_attr($taxonomy->name) . '" class="texonomyname">' . esc_html($taxonomy->label) . '</option>';
@@ -118,7 +156,6 @@ function wshs_get_posts_by_taxonomy() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy', 'wshs_get_posts_by_taxonomy');
-//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy', 'wshs_get_posts_by_taxonomy');
 
 /**
  * 
@@ -132,10 +169,30 @@ function wshs_get_posts_by_taxonomy_post() {
 
     check_ajax_referer('ajax-nonce', 'security');
 
-    $type = sanitize_text_field($_POST['type']);
-    $catslug = sanitize_text_field($_POST['catslug']);
-    $dateformate = sanitize_text_field($_POST['dateformate']);
-    $orderby = sanitize_text_field($_POST['orderby']);
+    if(isset($_POST['type'])){
+        $type = sanitize_text_field(wp_unslash($_POST['type']));
+    } else {
+        $type = "";
+    }
+
+    if(isset($_POST['catslug'])){
+        $catslug = sanitize_text_field(wp_unslash($_POST['catslug']));
+    } else {
+        $catslug = "";
+    }
+
+    if(isset($_POST['dateformate'])){
+        $dateformate = sanitize_text_field(wp_unslash($_POST['dateformate']));
+    } else {
+        $dateformate = "";
+    }
+
+    if(isset($_POST['orderby'])){
+        $orderby = sanitize_text_field(wp_unslash($_POST['orderby']));
+    } else {
+        $orderby = "";
+    }
+
 
     if (!taxonomy_exists($catslug)) {
         wp_send_json_error('Invalid post type');
@@ -167,7 +224,7 @@ function wshs_get_posts_by_taxonomy_post() {
         'orderby' => $orderby,
         'order' => "ASC",
         'ignore_custom_sort' => true,
-        'tax_query' => $taxquery,
+        'tax_query' => $taxquery,  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
     );
 
     $loop = new WP_Query($args);
@@ -184,8 +241,8 @@ function wshs_get_posts_by_taxonomy_post() {
             'ID' => $post->ID,
             'post_parent' => $post->post_parent,
             'post_date' => date_i18n($dateformate, strtotime($post->post_date)),
-            'post_excerpt' => esc_html(wshs_truncate_value(strip_tags($exp), 100, ' ')),
-            'post_content' => esc_html(wshs_truncate_value(strip_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
+            'post_excerpt' => esc_html(wshs_truncate_value(wp_strip_all_tags($exp), 100, ' ')),
+            'post_content' => esc_html(wshs_truncate_value(wp_strip_all_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
             'post_image' => esc_url($featureimg[0]),
         );
     endwhile;
@@ -195,7 +252,6 @@ function wshs_get_posts_by_taxonomy_post() {
 }
 
 add_action('wp_ajax_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonomy_post');
-//add_action('wp_ajax_nopriv_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonomy_post');
 
 /**
  * 
@@ -203,19 +259,24 @@ add_action('wp_ajax_wshs_get_posts_by_taxonomy_post', 'wshs_get_posts_by_taxonom
  */
 function wshs_get_posts_by_taxonomy_terms() {
     if (!current_user_can( 'manage_options' ) ) {
-        return wp_send_json( array( 'result' => 'Authentication error' ) );
+        return wp_send_json( array( 'result' => esc_html__("Authentication error","wp-simple-html-sitemap") ) );
     }
 
     check_ajax_referer('ajax-nonce', 'security');
 
-    $taxonomyName = esc_html($_POST['taxonomyname']);
+    if(isset($_POST['taxonomyname'])){
+        $taxonomyName = sanitize_text_field(wp_unslash($_POST['taxonomyname']));
+    } else {
+        $taxonomyName = "";
+    }
+    
 
     // if (!taxonomy_exists($taxonomyname)) {
     //     wp_send_json_error('Invalid taxonomy');
     // }
     $data = array();
     $custom_terms = get_terms($taxonomyName);
-    $data['data'] .= '<option value="">Select Taxonomy Terms</option>';
+    $data['data'] .= '<option value="">'.esc_html__("Select Taxonomy Terms","wp-simple-html-sitemap").'</option>';
     if ($taxonomyName != '') {
         foreach ($custom_terms as $taxonomy) {
             $data['data'] .= '<option value="' . esc_attr($taxonomy->slug) . '">' . esc_html($taxonomy->name) . '</option>';
@@ -234,18 +295,48 @@ add_action('wp_ajax_wshs_get_posts_by_taxonomy_terms', 'wshs_get_posts_by_taxono
  */
 function wshs_get_posts_by_taxonomy_terms_posts() {
     global $post;
+
     if (!current_user_can( 'manage_options' ) ) {
-        return wp_send_json( array( 'result' => 'Authentication error' ) );
+        return wp_send_json( array( 'result' => esc_html__("Authentication error","wp-simple-html-sitemap") ) );
     }
 
     check_ajax_referer('ajax-nonce', 'security');
 
-    $type = sanitize_text_field($_POST['type']);
-    $taxonomy_name = sanitize_text_field($_POST['taxonomyslug']);
-    $terms_name = sanitize_text_field($_POST['termsslug']);
-    $dateformate = sanitize_text_field($_POST['dateformate']);
-    $orderby = sanitize_text_field($_POST['orderby']);
-    $order = sanitize_text_field($_POST['order']);
+    if(isset($_POST['type'])){
+        $type = sanitize_text_field(wp_unslash($_POST['type']));
+    } else {
+        $type = "";
+    }
+
+    if(isset($_POST['taxonomyslug'])){
+        $taxonomy_name = sanitize_text_field(wp_unslash($_POST['taxonomyslug']));
+    } else {
+        $taxonomy_name = "";
+    }
+
+    if(isset($_POST['termsslug'])){
+        $terms_name = sanitize_text_field(wp_unslash($_POST['termsslug']));
+    } else {
+        $terms_name = "";
+    }
+
+    if(isset($_POST['dateformate'])){
+        $dateformate = sanitize_text_field(wp_unslash($_POST['dateformate']));
+    } else {
+        $dateformate = "";
+    }
+
+    if(isset($_POST['orderby'])){
+        $orderby = sanitize_text_field(wp_unslash($_POST['orderby']));
+    } else {
+        $orderby = "";
+    }
+
+    if(isset($_POST['order'])){
+        $order = sanitize_text_field(wp_unslash($_POST['order']));
+    } else {
+        $order = "";
+    }
 
     // if (!taxonomy_exists($taxonomyname)) {
     //     wp_send_json_error('Invalid taxonomy');
@@ -288,7 +379,7 @@ function wshs_get_posts_by_taxonomy_terms_posts() {
         'orderby' => esc_html($orderby),
         'order' => esc_html($order),
         'ignore_custom_sort' => true,
-        'tax_query' => $taxquery,
+        'tax_query' => $taxquery,  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
     );
     $loop = new WP_Query($args);
     $typeallposts = array();
@@ -303,8 +394,8 @@ function wshs_get_posts_by_taxonomy_terms_posts() {
         'ID' => $post->ID,
         'post_parent' => $post->post_parent,
         'post_date' => date_i18n($dateformate, strtotime($post->post_date)),
-        'post_excerpt' => esc_html(wshs_truncate_value(strip_tags($exp), 100, ' ')),
-        'post_content' => esc_html(wshs_truncate_value(strip_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
+        'post_excerpt' => esc_html(wshs_truncate_value(wp_strip_all_tags($exp), 100, ' ')),
+        'post_content' => esc_html(wshs_truncate_value(wp_strip_all_tags(preg_replace('#\[[^\]]+\]#', '', $contentpost)), 100, ' ')),
         'post_image' => esc_url($featureimg[0]),
     );
 endwhile;
@@ -385,17 +476,26 @@ function wshs_truncate_value($string, $limit, $break = ".", $pad = "...") {
     return $string;
 }
 
-// Handle AJAX request  
-function handle_disable_plugin_styles() {  
-    if (isset($_POST['option_value'])) {  
-        $value = $_POST['option_value'] === 'true' ? '1' : '0';  
-        update_option('wshs_disable_plugin_styles', $value);  
-        wp_send_json_success($value);  
-    } else {  
-        $value = get_option('wshs_disable_plugin_styles', '0');  
-        wp_send_json_success($value);  
-    }  
+
+// Handle AJAX request
+function wshs_disable_plugin_styles_ajax() {
+
+	check_ajax_referer( 'wshs_disable_styles', 'security' );
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die(
+			esc_html__( 'You do not have sufficient permissions to access this page.', 'wp-simple-html-sitemap' )
+		);
+	}
+
+	if ( isset( $_POST['option_value'] ) ) {
+		$value = ( 'true' === $_POST['option_value'] ) ? '1' : '0';
+		update_option( 'wshs_disable_plugin_styles', $value );
+		wp_send_json_success( $value );
+	}
+
+	$value = get_option( 'wshs_disable_plugin_styles', '0' );
+	wp_send_json_success( $value );
 }
 
-add_action('wp_ajax_handle_disable_plugin_styles', 'handle_disable_plugin_styles');
-//add_action('wp_ajax_nopriv_handle_disable_plugin_styles', 'handle_disable_plugin_styles');
+add_action( 'wp_ajax_wshs_disable_plugin_styles', 'wshs_disable_plugin_styles_ajax' );

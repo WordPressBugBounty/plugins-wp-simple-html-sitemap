@@ -1,4 +1,7 @@
 <?php 
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
@@ -17,23 +20,47 @@ function wshs_save_shortcode() {
     check_ajax_referer('ajax-nonce', 'security');
     global $wpdb;
 
-    $code = stripcslashes(htmlspecialchars_decode($_POST['code']));
-    $type = esc_html($_POST['type']);
-    $title = esc_html($_POST['title']);
-    $id = esc_html($_POST['id']);
+    if(isset($_POST['code'])){
+        $code = sanitize_text_field(wp_unslash($_POST['code']));
+    } else {
+        $code = "";
+    }
+    
+    if(isset($_POST['type'])){
+        $type = sanitize_text_field( wp_unslash($_POST['type']));
+    } else {
+        $type = "";
+    }
+
+    if(isset($_POST['title'])){
+        $title = sanitize_text_field( wp_unslash($_POST['title']));
+    } else {
+        $title = "";
+    }
+
+    if(isset($_POST['id'])){
+        $id = sanitize_text_field( wp_unslash($_POST['id']));
+    } else {
+        $id = 0;
+    }
+
+
     $atts_array = shortcode_parse_atts('[wshs_list post_type="page" name="Page Sitemap" order_by="date" order ="asc"]');
     $post_data = array(
         'title' => $title,
         'attributes' => $code,
         'user_id' => get_current_user_id(),
         'code_type' => $type,
-        'updated_at' => date('Y-m-d H:i:s')
+        'updated_at' => gmdate('Y-m-d H:i:s')
     );
 
     if($id > 0){
-        $wpdb->update( $wpdb->base_prefix.WSHS_SAVED_CODE_TABLE, $post_data, array( 'id' => $id ), array( '%s','%s','%d','%s','%s'), array( '%d' ) );
+        // We are querying a custom plugin table that has no WordPress API equivalent.
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery
+        $wpdb->update( $wpdb->base_prefix.WSHS_SAVED_CODE_TABLE, $post_data, array( 'id' => intval($id) ), array( '%s','%s','%d','%s','%s'), array( '%d' ) );
+        
     } else {
-        $post_data['created_at'] = date('Y-m-d H:i:s');
+        $post_data['created_at'] = gmdate('Y-m-d H:i:s');
         $format = array('%s','%s','%d','%s','%s','%s');
         $wpdb->insert($wpdb->base_prefix.WSHS_SAVED_CODE_TABLE,$post_data,$format);
         $id = $wpdb->insert_id;
@@ -48,24 +75,37 @@ function wshs_saved(){
     global $wpdb;
     $message = '';
     $table_name = $wpdb->prefix . WSHS_SAVED_CODE_TABLE;
-    $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : array();
-    if (!empty($id) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete'){
+    if(isset($_REQUEST['id'])){
+        $id = sanitize_text_field( wp_unslash($_REQUEST['id']));
+    } else {
+        $id = array();
+    }
+    //$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : array();
+    if ( ! empty( $id ) && isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'delete' ) {
+    
+        // Verify nonce first
+        if ( ! isset( $_REQUEST['wshs_nonce'] ) || 
+            ! wp_verify_nonce( sanitize_text_field(wp_unslash($_REQUEST['wshs_nonce'])), 'wshs_delete_' . $id ) ) {
+            wp_die( esc_html__( 'Security check failed.', 'wp-simple-html-sitemap' ) );
+        }
 
-        $wpdb->query(
-            $wpdb->prepare("DELETE FROM $table_name WHERE `id` = %d", esc_sql($id))
+        // Safe to delete
+        $wpdb->delete(
+            $table_name,           // Table name
+            array( 'id' => $id ),  // WHERE clause
+            array( '%d' )          // Value formats
         );
-        //$wpdb->query($wpdb->prepare("DELETE FROM $table_name WHERE id = ".esc_sql($id)));        
 
         $message = "Shortcode deleted successfully.";
     }
     $table = new WSHS_Saved_Code_Table();
     ?>
     <div class="wrap wtl-main">
-        <h1 class="wp-heading-inline">WordPress Simple HTML Sitemap</h1>
+        <h1 class="wp-heading-inline"><?php echo esc_html("Simple HTML Sitemap","wp-simple-html-sitemap"); ?></h1>
         <hr class="wp-header-end">
         <?php if(!empty($message)): ?>
             <div class="updated notice">
-                <p><?php echo $message; ?></p>
+                <p><?php echo esc_html($message); ?></p>
             </div>
         <?php endif; ?>
         
@@ -73,10 +113,10 @@ function wshs_saved(){
             <!-- Top Navigation -->
             <div class="sitemap-wordpress">
                 <h2 class="nav-tab-wrapper">
-                    <a href="?page=wshs_page_list" class="nav-tab">Pages</a>
-                    <a href="?page=wshs_post_list" class="nav-tab">Posts</a>
-                    <a href="?page=wshs_saved" class="nav-tab nav-tab-active">Saved Shortcodes</a>
-                    <a href="?page=wshs_documentation" class="nav-tab">Documentation</a>
+                    <a href="?page=wshs_page_list" class="nav-tab"><?php echo esc_html("Pages","wp-simple-html-sitemap"); ?></a>
+                    <a href="?page=wshs_post_list" class="nav-tab"><?php echo esc_html("Posts","wp-simple-html-sitemap"); ?></a>
+                    <a href="?page=wshs_saved" class="nav-tab nav-tab-active"><?php echo esc_html("Saved Shortcodes","wp-simple-html-sitemap"); ?></a>
+                    <a href="?page=wshs_documentation" class="nav-tab"><?php echo esc_html("Documentation","wp-simple-html-sitemap"); ?></a>
                 </h2>
                 <div class="sitemap-pages">
                     <div class="shortcode-container shortcode-item-list">
@@ -104,10 +144,10 @@ class WSHS_Saved_Code_Table extends WP_List_Table
     private $table_data;
     public function get_columns(){
         $columns = array(
-                'title'          => __('Name', 'whsh'),
-                'attributes'         => __('Shortcode', 'whsh'),
-                // 'created_at'   => __('Generated On', 'whsh'),
-                'action'   => __('Action', 'whsh'),
+                'title'          => esc_html('Name', 'wp-simple-html-sitemap'),
+                'attributes'         => esc_html('Shortcode', 'wp-simple-html-sitemap'),
+                // 'created_at'   => esc_html('Generated On', 'wp-simple-html-sitemap'),
+                'action'   => esc_html('Action', 'wp-simple-html-sitemap'),
         );
         return $columns;
     }
@@ -124,30 +164,55 @@ class WSHS_Saved_Code_Table extends WP_List_Table
 
     private function get_table_data() {
         global $wpdb;
-        $table = $wpdb->prefix . WSHS_SAVED_CODE_TABLE;
-        return $wpdb->get_results( "SELECT * from {$table} ORDER BY ID DESC", ARRAY_A );
+        $wpdb->wshs_saved_code = $wpdb->prefix . WSHS_SAVED_CODE_TABLE;
+        // Now no interpolation needed
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        return $wpdb->get_results( "SELECT * FROM {$wpdb->wshs_saved_code} ORDER BY id DESC", ARRAY_A );
+
+        /*$table = $wpdb->prefix . WSHS_SAVED_CODE_TABLE;
+        return $wpdb->get_results( "SELECT * from {$table} ORDER BY ID DESC", ARRAY_A );*/
     }
 
     function column_default($item, $column_name){
         switch ($column_name) {
         case 'created_at':
-            return date('Y-m-d', strtotime($item[$column_name]));
+            return gmdate('Y-m-d', strtotime($item[$column_name]));
         case 'attributes':
-            return '<pre>'.$item[$column_name].'</pre>';
+            return '<pre>'. esc_html($item[$column_name]) .'</pre>';
         case 'title':
-            return '<strong>'.$item[$column_name].'</strong> Date: '.date('d M, Y', strtotime($item['created_at']));
+            return '<strong>'. esc_html($item[$column_name]).'</strong> Date: '.gmdate('d M, Y', strtotime($item['created_at']));
         case 'action':
-            if($item['code_type'] == 'page'):
-                return '<a href="'.admin_url( 'admin.php?page=wshs_page_list&id='.$item['id']).'" class="button">Edit</a><a href="'.admin_url( 'admin.php?page=wshs_saved&action=delete&id='.$item['id']).'" class="button">Delete</a>';
-            else:
-                return '<a href="'.admin_url( 'admin.php?page=wshs_post_list&id='.$item['id']).'" class="button">Edit</a><a href="'.admin_url( 'admin.php?page=wshs_saved&action=delete&id='.$item['id']).'" class="button">Delete</a>';
-            endif;
+            if($item['code_type'] == 'page'){
+                $edit_url = admin_url( 'admin.php?page=wshs_page_list&id=' . $item['id'] );
+
+                $delete_url = wp_nonce_url(
+                    admin_url( 'admin.php?page=wshs_saved&action=delete&id=' . $item['id'] ),
+                    'wshs_delete_' . $item['id'], // Action for nonce
+                    'wshs_nonce'                  // Nonce field name
+                );
+                $links  = '<a href="' . esc_url( $edit_url ) . '" class="button">Edit</a>';
+                $links .= '<a href="' . esc_url( $delete_url ) . '" class="button">Delete</a>';
+                return $links;
+                //return '<a href="'.admin_url( 'admin.php?page=wshs_page_list&id='.$item['id']).'" class="button">Edit</a><a href="'.admin_url( 'admin.php?page=wshs_saved&action=delete&id='.$item['id']).'" class="button">Delete</a>';
+            }else{
+                $edit_url = admin_url( 'admin.php?page=wshs_post_list&id=' . $item['id'] );
+
+                $delete_url = wp_nonce_url(
+                    admin_url( 'admin.php?page=wshs_saved&action=delete&id=' . $item['id'] ),
+                    'wshs_delete_' . $item['id'], // Action for nonce
+                    'wshs_nonce'                  // Nonce field name
+                );
+                $links  = '<a href="' . esc_url( $edit_url ) . '" class="button">Edit</a>';
+                $links .= '<a href="' . esc_url( $delete_url ) . '" class="button">Delete</a>';
+                return $links;
+                //return '<a href="'.admin_url( 'admin.php?page=wshs_post_list&id='.$item['id']).'" class="button">Edit</a><a href="'.admin_url( 'admin.php?page=wshs_saved&action=delete&id='.$item['id']).'" class="button">Delete</a>';
+            }
         default:
             return $item[$column_name];
         }
     }
 
     public function no_items() {
-        _e( "You don't have any saved shortcode." );
+        esc_html("You don't have any saved shortcode.", 'wp-simple-html-sitemap');
     }
 }
