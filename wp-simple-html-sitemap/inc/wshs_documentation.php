@@ -5,9 +5,38 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 if (!function_exists('wshs_documentation')) {
 
     function wshs_documentation() {
-        wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_style.css',array(),filemtime(WSHS_PLUGIN_CSS . 'wshs_style.css'), false);
-        wp_enqueue_style('wshs_fancybox_css', WSHS_PLUGIN_CSS . 'jquery.fancybox.css',array(),filemtime(WSHS_PLUGIN_CSS . 'jquery.fancybox.css'), false);
-        wp_enqueue_script('wshs_fancybox_js', WSHS_PLUGIN_JS . 'jquery.fancybox.min.js',array(),filemtime(WSHS_PLUGIN_JS . 'jquery.fancybox.min.js'), true);
+        //~ wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_style.css',array(),filemtime(WSHS_PLUGIN_CSS . 'wshs_style.css'), false);
+        //~ wp_enqueue_style('wshs_fancybox_css', WSHS_PLUGIN_CSS . 'jquery.fancybox.css',array(),filemtime(WSHS_PLUGIN_CSS . 'jquery.fancybox.css'), false);
+        //~ wp_enqueue_script('wshs_fancybox_js', WSHS_PLUGIN_JS . 'jquery.fancybox.min.js',array(),filemtime(WSHS_PLUGIN_JS . 'jquery.fancybox.min.js'), true);
+        
+
+		$front_css_path     = WSHS_PLUGIN_PATH . 'css/wshs_style.css';
+		$fancybox_css_path  = WSHS_PLUGIN_PATH . 'css/jquery.fancybox.css';
+		$fancybox_js_path   = WSHS_PLUGIN_PATH . 'js/jquery.fancybox.min.js';
+
+		wp_enqueue_style(
+			'wshs_front_css',
+			WSHS_PLUGIN_URL . 'css/wshs_style.css',
+			array(),
+			file_exists($front_css_path) ? filemtime($front_css_path) : '1.0',
+			false
+		);
+
+		wp_enqueue_style(
+			'wshs_fancybox_css',
+			WSHS_PLUGIN_URL . 'css/jquery.fancybox.css',
+			array(),
+			file_exists($fancybox_css_path) ? filemtime($fancybox_css_path) : '1.0',
+			false
+		);
+
+		wp_enqueue_script(
+			'wshs_fancybox_js',
+			WSHS_PLUGIN_URL . 'js/jquery.fancybox.min.js',
+			array('jquery'),
+			file_exists($fancybox_js_path) ? filemtime($fancybox_js_path) : '1.0',
+			true
+		);
         ?>
         <div class="wrap wtl-main">
             <h1 class="wp-heading-inline"><?php echo esc_html("Simple HTML Sitemap","wp-simple-html-sitemap"); ?></h1>

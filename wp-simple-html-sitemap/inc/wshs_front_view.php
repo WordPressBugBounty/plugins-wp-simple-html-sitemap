@@ -10,7 +10,28 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 function wshs_front_display_list($atts) {
 
     if (get_option('wshs_disable_plugin_styles') == '0') {
-        wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_front_style.css',array(),filemtime(WSHS_PLUGIN_CSS . 'wshs_front_style.css'), false);
+        //wp_enqueue_style('wshs_front_css', WSHS_PLUGIN_CSS . 'wshs_front_style.css',array(),filemtime(WSHS_PLUGIN_CSS . 'wshs_front_style.css'), false);
+        
+        
+		// Get the absolute path to the CSS file on the server
+		$css_file = plugin_dir_path( __FILE__ ) . '../css/wshs_front_style.css';
+
+		// Check if the file exists to avoid warnings
+		if ( file_exists( $css_file ) ) {
+			$css_version = filemtime( $css_file ); // Use file modification time for versioning
+		} else {
+			$css_version = false; // fallback if file not found
+		}
+
+		// Enqueue the CSS file
+		wp_enqueue_style(
+			'wshs_front_style', // handle
+			plugins_url( '../css/wshs_front_style.css', __FILE__ ), // URL to CSS
+			array(), // dependencies
+			$css_version // version (for cache busting)
+		);
+    
+    
     }
     if (get_option('wshs_disable_plugin_styles') == '1') {
         wp_dequeue_style( 'wshs_front_css' );

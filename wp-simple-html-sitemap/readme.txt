@@ -5,7 +5,7 @@ Tags: html sitemap plugin, html sitemap shortcode, simple html sitemap, sitemap,
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.7
+Stable tag: 3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +119,8 @@ Share details about issue/bug via plugin support option or reach at me through m
 
 
 == Changelog ==
+= 3.8 =
+* Resolved a warning related to time function
 
 = 3.7 =
 * Resolved issues pointed out by WordPress plugin review team. 
