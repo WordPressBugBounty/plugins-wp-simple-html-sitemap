@@ -271,8 +271,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
                 $date = '';
             }
         }
-        if ($level <= $depth) {
-            //$returndata .= '<li><a href="' . get_permalink($singlepost->ID) . '" title="' . $singlepost->post_title . '">' . $singlepost->post_title . '</a>' . $date;
+        if ($level <= $depth) {            
             $returndata .= '<li><a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>' . esc_html($date);
 
             if (isset($singlepost->children)) {
@@ -287,7 +286,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
             }
             $returndata .= '</li>';
         } elseif ($depth == -1) {
-            $returndata .= '<li><a href="' . get_permalink($singlepost->ID) . '" title="' . $singlepost->post_title . '">' . $singlepost->post_title . '</a>' . $date;
+            $returndata .= '<li><a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>' . esc_html($date);
             if (isset($singlepost->children)) {
                 $returndata .= '<ul class="children">';
                 $returndata .= wshs_simple_list_view($singlepost->children, $level + 1, $startdate, $showdate, $dateformat, $title, $depth = -1, $columnlayout, $columnposition);
@@ -295,7 +294,7 @@ function wshs_simple_list_view($allposts, $level, $startdate, $showdate, $datefo
             }
             $returndata .= '</li>';
         } elseif ($depth == '') {
-            $returndata .= '<li><a href="' . get_permalink($singlepost->ID) . '" title="' . $singlepost->post_title . '">' . $singlepost->post_title . '</a>' . $date;
+            $returndata .= '<li><a href="' . esc_url(get_permalink($singlepost->ID)) . '" title="' . esc_attr($singlepost->post_title) . '">' . esc_html($singlepost->post_title) . '</a>' . esc_html($date);
             if (isset($singlepost->children)) {
                 $returndata .= '<ul class="children">';
                 $returndata .= wshs_simple_list_view($singlepost->children, $level + 1, $startdate, $showdate, $dateformat, $title, $depth = -1, $columnlayout, $columnposition);

@@ -166,7 +166,7 @@ if (!function_exists('wshs_post_list')) {
                             <div class="short-code-main">
                                 <div id="wshs_shortcode"></div>
                                 <div class="short-code-action">
-                                <input type="text" id="wshs_code_title" name="wshs_code_title" value="<?php echo esc_html($default_title); ?>">
+                                <input type="text" id="wshs_code_title" name="wshs_code_title" value="<?php echo esc_attr($default_title); ?>">
                                     <a href="javascript:void(0);" class="short-code-save-btn button" data-type="post" data-id="<?php echo esc_attr($id); ?>">Save</a>
                                     <a href="javascript:void(0);" class="short-code-copy-btn button"><?php echo esc_html("Copy","wp-simple-html-sitemap"); ?></a>                                    
                                 </div>

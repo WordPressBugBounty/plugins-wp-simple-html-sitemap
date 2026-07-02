@@ -3,9 +3,9 @@ Contributors: ashishajani
 Donate link: http://freelancer-coder.com
 Tags: html sitemap plugin, html sitemap shortcode, simple html sitemap, sitemap, post and pages sitemap
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 3.8
+Stable tag: 3.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +119,9 @@ Share details about issue/bug via plugin support option or reach at me through m
 
 
 == Changelog ==
+= 3.9 =
+* Resolved vulnerability issues and tested with the latest WordPress version.
+
 = 3.8 =
 * Resolved a warning related to time function
 
